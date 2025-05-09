@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>재정추계 미니 시뮬레이터 </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .input-section {
+            margin: 20px 0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        #plot-image {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        .results-text {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>국민연금 재정추계 미니 시뮬레이터</h1>
+
+    <div class="input-section">
+        <div class="form-group">
+            <label for="contribution-rate">보험료율 (%)</label>
+            <input type="number" id="contribution-rate" min="1" max="30" step="0.1" value="9">
+        </div>
+
+        <div class="form-group">
+            <label for="income-replacement">소득대체율 (%)</label>
+            <input type="number" id="income-replacement" min="1" max="100" step="0.1" value="40">
+        </div>
+
+
+        <button onclick="calculate()">계산하기</button>
+    </div>
+
+    <div class="results-section">
+        <div id="loading" style="display: none;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <div class="loading-text" style="font-size: 1.1em;">계산 중입니다. 음... 속도 느려 터지니 인내심을 가지고 기다려주세요. </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div id="results-text" class="results-text"></div>
+    <img id="plot-image" src="/static/images/default.png" style="display: block;">
+
+    </div>
+
+    <script>
+        async function calculate() {
+            const loading = document.getElementById('loading');
+            const plotImage = document.getElementById('plot-image');
+            const resultsText = document.getElementById('results-text');
+            resultsText.innerHTML = '';
+            loading.style.display = 'block';
+            plotImage.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('contribution_rate', document.getElementById('contribution-rate').value);
+            formData.append('income_replacement', document.getElementById('income-replacement').value);
+
+            try {
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    resultsText.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; gap: 20px;">
+                                <div style="flex: 1; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                                    <span style="font-weight: bold;">최대 적립금:</span><br>${data.max_reserve.toFixed(1)}조원
+                                </div>
+                                <div style="flex: 1; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                                    <span style="font-weight: bold;">적자전환 연도:</span><br>${data.deficit_year}년
+                                </div>
+                                <div style="flex: 1; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                                    <span style="font-weight: bold;">기금 소진 연도:</span><br>${data.depletion_year}년
+                                </div>
+                            </div>
+                        `;
+                    plotImage.src = `data:image/png;base64,${data.image}`;
+                    plotImage.style.display = 'block';
+
+                } else {
+                    resultsText.innerHTML = `오류 발생: ${data.error}`;
+                }
+            } catch (error) {
+                resultsText.innerHTML = `오류 발생: ${error.message}`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
