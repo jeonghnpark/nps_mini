@@ -21,7 +21,9 @@ class FinanceModule:
         self.reserve_fund = 915e8  # 2023년 초기 명목 적립금 (915조원): 단위 만원
         self.real_reserve_fund = 915e8  # 2023년 초기 실질 적립금 (915조원): 단위 만원
 
-    def project_balance(self, year, subscribers, benefits, economic_vars):
+    def project_balance(
+        self, year, subscribers, benefits, economic_vars, portfolio_return
+    ):
 
         # 실질 수입/지출/수지차 추계
         real_revenue = self._calculate_total_revenue(year, subscribers, economic_vars)

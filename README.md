@@ -24,7 +24,7 @@ jh70035@gmail.com<br>
 - 가입자 모듈 (SubscriberModule)
 - 급여지출 모듈 (BenefitModule)
 - 재정수지 모듈 (FinanceModule)
-- 투자모듈(investmentModule)
+- 투자모듈(InvestmentModule)
 
 ### 주요 결과
 - 기본가정하에서 기금 적립금액은 다음과 같습니다. 
@@ -94,8 +94,24 @@ jh70035@gmail.com<br>
 - 통계청 총조사인구 성/연령별 통계 (2024)
 
 
-## 향후 개선 계획 
+## 개선 계획 
 
+
+
+## 설치 방법
+*   **Windows:**
+    ```bash
+    python -m venv venv
+    .\venv\Scripts\activate
+    ```
+*   **macOS/Linux:**
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+```bash
+pip install -r requirements.txt
+```
 
 
 
