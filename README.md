@@ -15,9 +15,7 @@ jh70035@gmail.com<br>
 
 
 
-### 기반 자료
-- [연차보고서 2023-02 - 2024년 국민연금기금의 자산배분 -ALM분석을 중심으로]
-- [국민연금 제5차 재정계산 결과 (2023)](https://nsp.nanet.go.kr/plan/subject/detail.do?nationalPlanControlNo=PLAN0000037347)
+
 
 
 ## 주요 기능
@@ -26,9 +24,10 @@ jh70035@gmail.com<br>
 - 가입자 모듈 (SubscriberModule)
 - 급여지출 모듈 (BenefitModule)
 - 재정수지 모듈 (FinanceModule)
+- 투자모듈(investmentModule)
 
 ### 주요 결과
-- 제5차 재정추계 보고서와 같은 결과를 재현하였습니다.
+- 기본가정하에서 기금 적립금액은 다음과 같습니다. 
 - 국민연금 적립금은 2038년 1,796조원으로 최고치에 도달한 후 지속적으로 감소하고 2055년 소진됩니다.
 - 수입보다 지출이 더 커지는 수지적자는 2039년부터 발생할 것으로 예측되었습니다. 
 - 노인부양비는 지속적으로 증가하여 2070년 124%에 이릅니다. 
@@ -47,32 +46,23 @@ jh70035@gmail.com<br>
 ![인구추계 결과](./images/nps_gdp_expenditure.png)
 
 
-#### 3. 인구구조 변화
-![인구구조 변화 결과](./images/nps_demographic_indicators.png)
-- 총인구 및 생산가능인구 감소 추세
-- 노년부양비는 지속적으로 증가하여 2070년 124%에 이릅니다.
-
-#### 3.1 인구 피라미드
-![인구 피라미드](./images/population_pyramid_2023.png)
-- 2023년 기준 인구구조를 보여주는 인구 피라미드
-- 40-50대가 가장 많은 인구 구조
-- 저출산으로 인한 0-17세 인구의 급격한 감소
-- 65세 이상 고령인구의 증가 추세
-
-
 #### 4. 민감도 분석
 기본가정(소득대체율 40%, 보험료율 9%)에서 주요 변수들의 민감도는 다음과 같습니다:
 
+- 
 - 보험료율 1% 증가시 최대적립금 258.5조원 증가
 - 보험료율 1% 증가시 기금소진연도 2.5년 연장
 - 소득대체율 1% 증가시 기금소진연도 0.5년 단축
+##### 4.1 자산배분 전략에에 따른 적자 전환 및 기금 소진 연도
+- 
+- 
 
-##### 4.1 보험료율에 따른 적자 전환 및 기금 소진 연도
+##### 4.2 보험료율에 따른 적자 전환 및 기금 소진 연도
 ![보험료율 결과](./images/lineplot_deficit_depletion_by_contribution.png)
 - 보험료율이 증가함에 따라 적자 전환 연도와 기금 소진 연도가 늦춰지는 경향을 보임
 - 보험료율이 높을수록 기금 소진이 지연됨
 
-##### 4.2 소득대체율에 따른 적자 전환 및 기금 소진 연도  
+##### 4.3 소득대체율에 따른 적자 전환 및 기금 소진 연도  
 ![소득대체율 결과](./images/lineplot_deficit_depletion_by_income_replacement.png)
 - 소득대체율이 증가할수록 적자 전환 연도와 기금 소진 연도가 앞당겨지는 경향을 보임
 - 소득대체율이 높을수록 급여지출이 증가하여 기금 소진이 가속화됨
@@ -95,8 +85,10 @@ jh70035@gmail.com<br>
 - 수급개시연령: 65세
 
 ## 참고문헌
-- 국민연금 제5차 재정계산 결과 (2023)
-https://nsp.nanet.go.kr/plan/subject/detail.do?nationalPlanControlNo=PLAN0000037347
+- [연차보고서 2023-02 - 2024년 국민연금기금의 자산배분 -ALM분석을 중심으로](https://raw.githubusercontent.com/jeonghnpark/nps_mini/main/docs/(%EC%97%B0%EC%B0%A8%EB%B3%B4%EA%B3%A0%EC%84%9C%202023-02)%202024%EB%85%84%20%EA%B5%AD%EB%AF%BC%EC%97%B0%EA%B8%88%EA%B8%B0%EA%B8%88%EC%9D%98%20%EC%9E%90%EC%82%B0%EB%B0%B0%EB%B6%84%20-%20ALM%EB%B6%84%EC%84%9D%EC%9D%84%20%EC%A4%91%EC%8B%AC%EC%9C%BC%EB%A1%9C%20-%20(2).pdf)
+
+- [국민연금 제5차 재정계산 결과 (2023)](https://raw.githubusercontent.com/jeonghnpark/nps_mini/blob/main/docs/%5B%EC%84%A4%EB%AA%85%EC%9E%90%EB%A3%8C%5D_%EC%9E%AC%EC%A0%95%EC%B6%94%EA%B3%84_%EA%B2%B0%EA%B3%BC.pdf)
+
 - 통계청 2023년 사망원인통계 (2023)
 - 고용노동부 근로자의 평균임금(성/사업체규모/연령별) 통계 (2024)
 - 통계청 총조사인구 성/연령별 통계 (2024)
@@ -104,15 +96,6 @@ https://nsp.nanet.go.kr/plan/subject/detail.do?nationalPlanControlNo=PLAN0000037
 
 ## 향후 개선 계획 
 
-### 개선사항
-- 최근 금리 상승을 반영한 재정추계 재계산
-  - 국제 경제상황 변동 반영
-  - 금리 민감도 분석
-
-### 중장기 개선사항
-- 확률론적 시뮬레이션 (Monte Carlo Simulation)
-  - 기금정책이 외부 충격변수에 대해서 기금 안정성을 담보할 수 있는지 여부
-- 상관관계 모델링을 통한 동적 최적화 (최적 보험률과 소득대체율 탐색)
 
 
 
@@ -120,14 +103,13 @@ https://nsp.nanet.go.kr/plan/subject/detail.do?nationalPlanControlNo=PLAN0000037
 ### 1. 단일 모델 실행(기본가정)
 - 기본가정 모델: `python NPS_model.py`
 ### 2. 시나리오 분석과 시각화
-- 시나리오 분석석 : `python simulation.py`
+- 시나리오 분석: `python simulation.py`
 
 ## 출력 결과
 모델은 다음 CSV 파일과 이미지 파일을 생성합니다:
-- `csv/financial_results_실질_[timestamp].csv`: 재정추계 결과
-- `csv/demographic_results_실질_[timestamp].csv`: 인구추계 결과
+- `csv/financial_results_실질_[timestamp].csv`: 재정수지 결과
+- `csv/demographic_results_실질_[timestamp].csv`: 인구예측 결과
 - `csv/simulation_results_[timestamp].csv` : 시뮬레이션 결과 
 - `images/data/nps_reserve_fund_[timestamp].png`: 연도별 누적 적립 기금
-- `images/data/nps_demographic_indicators_[timestamp].png`: 인구추계 결과
 - `images/lineplot_xxxx.png`: 각종 시뮬레이션 결과 시각화
 
