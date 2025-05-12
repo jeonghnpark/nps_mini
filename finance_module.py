@@ -2,27 +2,23 @@
 import pandas as pd
 import numpy as np
 from nps_common import NPSCommon
+from investment_module import InvestmentModule
 
 
 class FinanceModule:
-    def __init__(self, common: NPSCommon):
+    def __init__(self, common: NPSCommon, investment_module: InvestmentModule = None):
         self.common = common
+        self.investment_module = investment_module
         self.params = {
             "contribution_rate": 0.09,
-            "nominal_investment_return": {
-                2023: 0.049,
-                2030: 0.049,
-                2040: 0.046,
-                2050: 0.045,
-                2060: 0.045,
-            },
-            "real_investment_return": {
-                2023: 0.025,
-                2030: 0.022,
-                2040: 0.020,
-                2050: 0.020,
-                2060: 0.020,
-            },
+            # "real_investment_return": {
+            #     2023: 0.025,
+            #     2030: 0.025,
+            #     2040: 0.025,
+            #     2050: 0.025,
+            #     2060: 0.025,
+            # },
+            # "real_investment_return_fixed": 0.025,
         }
 
         self.reserve_fund = 915e8  # 2023년 초기 명목 적립금 (915조원): 단위 만원
@@ -44,7 +40,8 @@ class FinanceModule:
 
         # 적립금 계산 (명목)
         self.reserve_fund = self._calculate_reserve_fund(year, nominal_balance)
-        real_reserve_fund = self.reserve_fund / cumulative_inflation
+        # real_reserve_fund = self.reserve_fund / cumulative_inflation
+        self.real_reserve_fund = self.reserve_fund / cumulative_inflation
 
         return {
             "year": year,
@@ -55,7 +52,7 @@ class FinanceModule:
             "nominal_balance": nominal_balance,
             "real_balance": real_balance,
             "nominal_reserve_fund": self.reserve_fund,
-            "real_reserve_fund": real_reserve_fund,
+            "real_reserve_fund": self.real_reserve_fund,
             "fund_ratio": self.reserve_fund / nominal_expenditure,
             "nominal_gdp": economic_vars["nominal_gdp"],
             "real_gdp": economic_vars["real_gdp"],
@@ -67,8 +64,16 @@ class FinanceModule:
             subscribers["total_income_real"] * self.params["contribution_rate"]
         )
         # 투자 수익 (실질수익률 적용)
-        real_return = self._get_real_investment_return(year)
-        investment_revenue = self.reserve_fund * real_return
+        # real_return = self._get_real_investment_return(year)
+        # real_return = self.params["real_investment_return_fixed"]
+        if self.investment_module:
+            investment_returns = self.investment_module.get_investment_returns(year)
+            real_return = investment_returns["real"]
+        else:
+            real_return = 0.025  # 고정값 for test
+
+        # investment_revenue = self.reserve_fund * real_return
+        investment_revenue = self.real_reserve_fund * real_return
 
         return contribution_revenue + investment_revenue
 

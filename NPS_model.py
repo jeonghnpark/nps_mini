@@ -2,6 +2,7 @@ from nps_common import NPSCommon
 from demographic_module import DemographicModule
 from economic_module import EconomicModule
 from finance_module import FinanceModule, SubscriberModule, BenefitModule
+from investment_module import InvestmentModule
 from visualization import (
     save_results_to_csv,
     create_financial_plots,
@@ -32,20 +33,31 @@ timestamp = now.strftime("%d%H%M")
 
 
 class NationalPensionModel:
-    def __init__(self):
+    def __init__(self, asset_allocation=None, expected_returns=None):
         self.start_year = 2023  # 고정해야함 초기값등
         self.end_year = 2093
 
         self.common = NPSCommon()
-        # 주요 모듈 초기화
+
         self.demographic = DemographicModule()  # 인구모듈
         self.economic = EconomicModule()  # 경제모듈
         self.subscriber = SubscriberModule(self.common)  # 가입자모듈
         self.benefit = BenefitModule(self.common)  # 급여모듈
-        self.finance = FinanceModule(self.common)  # 재정모듈
+
+        # InvestmentModule 초기화
+        self.investment = InvestmentModule(
+            self.common,
+            asset_allocation_scenario=asset_allocation,
+            expected_returns_scenario=expected_returns,
+        )
+
+        self.finance = FinanceModule(self.common, self.investment)
 
     def run_projection(self):
         """재정추계 실행"""
+        # finance 모듈 reset !!
+        self.finance = FinanceModule(self.common, self.investment)
+
         results = []
         demographic_results = []  # 인구지표 저장용
 
@@ -93,6 +105,23 @@ class NationalPensionModel:
 
 
 if __name__ == "__main__":
+
+    # asset_allocation = {
+    #     "domestic_stock": 1,
+    #     "foreign_stock": 0,
+    #     "domestic_bond": 0,
+    #     "foreign_bond": 0,
+    #     "alternative": 0,
+    # }
+
+    # expected_returns = {
+    #     "domestic_stock": 0.05,
+    #     "foreign_stock": 0,
+    #     "domestic_bond": 0,
+    #     "foreign_bond": 0,
+    #     "alternative": 0,
+    # }
+
     nps = NationalPensionModel()
     rs = nps.run_projection()
 
