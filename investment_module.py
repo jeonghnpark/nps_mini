@@ -10,7 +10,11 @@ class InvestmentModule:
         expected_returns_scenario=None,
         volatilities_scenario=None,
         correlations_scenario=None,
+        stochastic=False,
+        simulation_number=0,
     ):
+        self.stochastic = stochastic
+        self.simulation_number = simulation_number
 
         self.common = common
         self.asset_allocation = (
@@ -35,6 +39,8 @@ class InvestmentModule:
             if correlations_scenario
             else self._get_default_correlations()
         )
+
+        self.portfolio_volatility = self.calculate_portfolio_volatility()
 
     def _get_default_asset_allocation(self):
 
@@ -153,7 +159,7 @@ class InvestmentModule:
     #     real_return = (1 + nominal_return) / (1 + inflation_rate) - 1
     #     return real_return
 
-    def get_investment_returns(self, year=None):
+    def get_investment_returns(self, year=None, simulation_index=None):
         """
         deterministic assumption
         no vol and corr
@@ -167,10 +173,17 @@ class InvestmentModule:
         # calculate nominl return
         for asset, weight in self.asset_allocation.items():
             if asset in self.expected_returns:
+
                 nominal_return += weight * self.expected_returns[asset]
+
                 total_weight += weight
+
             else:
                 print(f"Warning: Expected return for '{asset}' not found. Skipping.")
+
+        if self.stochastic:
+            np.random.seed(simulation_index if simulation_index is not None else None)
+            nominal_return = np.random.normal(nominal_return, self.portfolio_volatility)
 
         inflation_rate = self.common.get_inflation_rate(year)
 
