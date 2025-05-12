@@ -21,8 +21,10 @@ class FinanceModule:
             # "real_investment_return_fixed": 0.025,
         }
 
-        self.reserve_fund = 915e8  # 2023년 초기 명목 적립금 (915조원): 단위 만원
-        self.real_reserve_fund = 915e8  # 2023년 초기 실질 적립금 (915조원): 단위 만원
+        self.reserve_fund = 890.5e8  # 2023년 초기 명목 적립금 (890.5조원): 단위 만원
+        self.real_reserve_fund = (
+            890.5e8  # 2023년 초기 실질 적립금 (890.5조원): 단위 만원
+        )
 
     def project_balance(self, year, subscribers, benefits, economic_vars):
         """재정수지 추계"""
