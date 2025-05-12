@@ -16,14 +16,20 @@ class FinanceModule:
                 2050: 0.045,
                 2060: 0.045,
             },
+            "real_investment_return": {
+                2023: 0.025,
+                2030: 0.022,
+                2040: 0.020,
+                2050: 0.020,
+                2060: 0.020,
+            },
         }
 
         self.reserve_fund = 915e8  # 2023년 초기 명목 적립금 (915조원): 단위 만원
         self.real_reserve_fund = 915e8  # 2023년 초기 실질 적립금 (915조원): 단위 만원
 
-    def project_balance(
-        self, year, subscribers, benefits, economic_vars, portfolio_return
-    ):
+    def project_balance(self, year, subscribers, benefits, economic_vars):
+        """재정수지 추계"""
 
         # 실질 수입/지출/수지차 추계
         real_revenue = self._calculate_total_revenue(year, subscribers, economic_vars)
@@ -67,8 +73,9 @@ class FinanceModule:
         return contribution_revenue + investment_revenue
 
     def _calculate_total_expenditure(self, year, benefits):
-        # 1. 연금급여 지출 (실질가치)
-        benefit_expenditure = benefits["total_benefits_real"]
+        """총지출 계산"""
+        # 1. 연금급여 지출
+        benefit_expenditure = benefits["total_benefits_real"]  # 실질가치 기준
 
         # 2. 관리운영비 (급여지출의 1% 가정)
         admin_cost = benefit_expenditure * 0.01
@@ -76,6 +83,7 @@ class FinanceModule:
         return benefit_expenditure + admin_cost
 
     def _calculate_reserve_fund(self, year, balance):
+        """적립금 계산"""
         # 전년도 적립금 + 당해연도 수지
         new_reserve_fund = self.reserve_fund + balance
 
@@ -83,14 +91,17 @@ class FinanceModule:
         return max(0, new_reserve_fund)
 
     def _get_real_investment_return(self, year):
-        nominal_return = self._get_nominal_investment_return(year)
-        inflation_rate = self._get_inflation_rate(year)
-
-        real_return = (1 + nominal_return) / (1 + inflation_rate) - 1
-        return real_return
+        """특정 연도의 실질투자수익률 반환"""
+        # 실질투자수익률 직접 사용
+        years = sorted(self.params["real_investment_return"].keys())
+        rates = [self.params["real_investment_return"][y] for y in years]
+        if year >= years[-1]:
+            return rates[-1]
+        else:
+            return np.interp(year, years, rates)
 
     def _get_nominal_investment_return(self, year):
-        # 연도별 명목투자수익률
+        """특정 연도의 명목투자수익률 반환"""
         years = sorted(self.params["nominal_investment_return"].keys())
         rates = [self.params["nominal_investment_return"][y] for y in years]
 
@@ -116,7 +127,7 @@ class SubscriberModule:
                 (50, 59): 0.75,  # 준고령층
                 (60, 64): 0.14,  # 고령층
             },
-            "avg_income": {  # 연령대별 평균소득 (단위 월/만원)
+            "avg_income": {  # 연령대별 평균소득
                 (18, 27): 250,  # 월 250만원
                 (28, 49): 350,
                 (50, 59): 380,
@@ -176,7 +187,7 @@ class BenefitModule:
                 2050: 25,
                 2060: 28,
             },
-            "benefit_rate": {  # 수급률 ( 인구 대비 65세 이상)
+            "benefit_rate": {  # 수급률 (65세 이상 인구 대비)
                 2023: 0.440,  # 44.0%
                 2030: 0.550,
                 2040: 0.650,

@@ -19,6 +19,7 @@ class DemographicModule:
         self.working_age = None  # 생산가능인구 (18-64세)
         self.elderly = None  # 고령인구 (65세 이상)
 
+        # 인구 변동요인 초기화 (중위가정 기준)
         self.params = {
             "fertility_rate": {  # 합계출산율 보고서 p11
                 2023: 0.73,
@@ -47,7 +48,7 @@ class DemographicModule:
         }
 
     def project_population(self, year):
-
+        """특정 연도의 인구추계"""
         # 1. 연령별/성별 인구구조 계산
         population_structure = self._calculate_population_structure(year)
 
@@ -81,16 +82,16 @@ class DemographicModule:
             연령별/성별 국제순이동 패턴 반영
             코호트별 특성 반영
         """
-
-        if year == 2023:  # 초기 인구구조조
+        if year == 2023:  # 기준연도는 초기 인구구조 반환
             return self.population_structure
 
+        # 이전 연도의 인구구조로부터 계산
         prev_population_struct = self._calculate_population_structure(year - 1).copy()
 
         # 연령 증가 (모든 연령층을 1세 증가)
         prev_population_struct["age"] += 1
 
-        # 사망률
+        # 사망률 적용 (간단한 연령별 사망률)
         survival_rates = self._get_survival_rates(prev_population_struct["age"])
         prev_population_struct["male"] *= survival_rates
         prev_population_struct["female"] *= survival_rates
@@ -106,7 +107,7 @@ class DemographicModule:
             fertile_women * fertility_rate / (49 - 15 + 1)
         )  # 합계출산율->연간 출생아수로 전환
 
-        # 출생성비 5:5로 그냥 적용
+        # 출생성비 적용
         male_births = total_births * 0.5
         female_births = total_births * 0.5
 
@@ -138,7 +139,9 @@ class DemographicModule:
         return population_structure.reset_index(drop=True)
 
     def _get_survival_rates(self, ages):
-        # 출처 ->통계청 사망원인통계
+        """간단한 연령별 생존률 계산"""
+        # 0세: 0.995, 1-39세: 0.999, 40-69세: 0.995, 70-89세: 0.98, 90세 이상: 0.90
+        # 출처 통계청 사망원인통계
         survival_rates = np.ones(len(ages))
 
         survival_rates[ages == 0] = 0.995
@@ -150,26 +153,69 @@ class DemographicModule:
         return survival_rates
 
     def _get_net_migration(self, year):
+        """특정 연도의 국제순이동자 수 반환"""
         years = sorted(self.params["net_migration"].keys())
         migration = [self.params["net_migration"][y] for y in years]
+
         return np.interp(year, years, migration) * 1000  # 천명 단위를 명 단위로 변환
 
     def get_fertility_rate(self, year):
+        """특정 연도의 합계출산율 반환"""
+        # 중간값은 선형보간
         years = sorted(self.params["fertility_rate"].keys())
         rates = [self.params["fertility_rate"][y] for y in years]
+
         return np.interp(year, years, rates)
 
 
 def create_initial_population_2023():
     """2023년 초기 인구구조 생성
-    14페이지 참조
+    국민연금 재정추계 자료 14페이지 참조
+
     """
     # 연령대별 인구 (만명)
     age_groups = {"under_18": 705, "18_64": 3501, "65_plus": 950}
 
+    # 연령별 인구 분포 (더 세분화된 데이터가 필요)
     population_structure = []
 
-    # 보고서의 인구 구성을 적당히 선형 보간함함
+    # # 0-17세 인구 분포
+    # young_pop_per_age = age_groups["under_18"] * 10000 / 18  # 만명을 명으로 변환
+    # for age in range(18):
+    #     population_structure.append(
+    #         {
+    #             "age": age,
+    #             "total": young_pop_per_age,
+    #             "male": young_pop_per_age * 0.5,  # 성비 가정
+    #             "female": young_pop_per_age * 0.5,
+    #         }
+    #     )
+
+    # # 18-64세 인구 분포
+    # working_pop_per_age = age_groups["18_64"] * 10000 / 47
+    # for age in range(18, 65):
+    #     population_structure.append(
+    #         {
+    #             "age": age,
+    #             "total": working_pop_per_age,
+    #             "male": working_pop_per_age * 0.5,
+    #             "female": working_pop_per_age * 0.5,
+    #         }
+    #     )
+
+    # # 65세 이상 인구 분포
+    # elderly_pop_per_age = age_groups["65_plus"] * 10000 / 36  # 65-100세 가정
+    # for age in range(65, 101):
+    #     population_structure.append(
+    #         {
+    #             "age": age,
+    #             "total": elderly_pop_per_age,
+    #             "male": elderly_pop_per_age * 0.5,  # 고령층 성비 반영
+    #             "female": elderly_pop_per_age * 0.5,
+    #         }
+    #     )
+
+    ######  연령대별 보다 현실적인 인구 구성
     young_total = age_groups["under_18"] * 10000  # 만명을 명으로 변환
     for age in range(18):
         weight = 0.8 + (age / 17) * 0.4  # 0세: 0.8, 17세: 1.2로 선형 증가
@@ -180,8 +226,8 @@ def create_initial_population_2023():
             {
                 "age": age,
                 "total": pop_at_age,
-                "male": pop_at_age * 0.5,
-                "female": pop_at_age * 0.5,
+                "male": pop_at_age * 0.51,
+                "female": pop_at_age * 0.49,
             }
         )
 
@@ -217,8 +263,8 @@ def create_initial_population_2023():
             {
                 "age": age,
                 "total": pop_at_age,
-                "male": pop_at_age * 0.5,
-                "female": pop_at_age * 0.5,
+                "male": pop_at_age * 0.45,
+                "female": pop_at_age * 0.55,
             }
         )
 
