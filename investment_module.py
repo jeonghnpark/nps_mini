@@ -99,7 +99,7 @@ class InvestmentModule:
         assets = list(self._get_default_asset_allocation().keys())
         n_assets = len(assets)
 
-        corr_matrix = np.eye(n_assets)  #이걸 리턴하면 상관계수= 0 
+        corr_matrix = np.eye(n_assets)  # 이걸 리턴하면 상관계수= 0
 
         # 자산군 간 상관관계 설정 (예시 값, 실제 값으로 대체 필요)
         # corr_matrix[i, j] = corr_value  # i번째 자산과 j번째 자산의 상관관계
@@ -122,10 +122,7 @@ class InvestmentModule:
         # corr_matrix[4, 2] = corr_matrix[2, 4] = 0.1  # 대체투자와 국내채권
         # corr_matrix[4, 3] = corr_matrix[3, 4] = 0.1  # 대체투자와 해외채권
 
-        return {
-            "matrix": corr_matrix,
-            "assets": assets
-        }
+        return {"matrix": corr_matrix, "assets": assets}
 
     def update_asset_allocation(self, new_allocation):
         self.asset_allocation = new_allocation
@@ -193,7 +190,7 @@ class InvestmentModule:
         portfolio_variance = np.dot(weights.T, np.dot(cov_matrix, weights))
         portfolio_volatility = np.sqrt(portfolio_variance)
 
-        return portfolio_volati아 lity
+        return portfolio_volatility
 
     def simulate_returns(self, years, n_simulations=1000, seed=None):
         """
