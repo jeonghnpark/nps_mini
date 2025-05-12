@@ -124,46 +124,63 @@ class InvestmentModule:
 
         return {"matrix": corr_matrix, "assets": assets}
 
-    def update_asset_allocation(self, new_allocation):
-        self.asset_allocation = new_allocation
+    # def update_asset_allocation(self, new_allocation):
+    #     self.asset_allocation = new_allocation
 
-    def update_expected_returns(self, new_returns):
-        self.expected_returns = new_returns
+    # def update_expected_returns(self, new_returns):
+    #     self.expected_returns = new_returns
 
-    def calculate_nominal_portfolio_return(self, year=None):
+    # def calculate_nominal_portfolio_return(self, year=None):
 
+    #     # TODO: 연도(year)별 자산배분
+    #     total_return = 0
+    #     total_weight = 0
+
+    #     for asset, weight in self.asset_allocation.items():
+    #         if asset in self.expected_returns:
+    #             total_return += weight * self.expected_returns[asset]
+    #             total_weight += weight
+    #         else:
+    #             print(f"Warning: Expected return for '{asset}' not found. Skipping.")
+
+    #     return total_return
+
+    # def calculate_real_portfolio_return(self, year):
+    #     nominal_return = self.calculate_nominal_portfolio_return(year)
+    #     inflation_rate = self.common.get_inflation_rate(year)
+
+    #     # 명목 수익률을 실질 수익률로 변환: (1 + 명목수익률) / (1 + 물가상승률) - 1
+    #     real_return = (1 + nominal_return) / (1 + inflation_rate) - 1
+    #     return real_return
+
+    def get_investment_returns(self, year=None):
+        """
+        deterministic assumption
+        no vol and corr
+        see simulation_return() for stochastic version.
+        """
         # TODO: 연도(year)별 자산배분
-        total_return = 0
+        nominal_return = 0
+        real_return = 0
         total_weight = 0
 
+        # calculate nominl return
         for asset, weight in self.asset_allocation.items():
             if asset in self.expected_returns:
-                total_return += weight * self.expected_returns[asset]
+                nominal_return += weight * self.expected_returns[asset]
                 total_weight += weight
             else:
                 print(f"Warning: Expected return for '{asset}' not found. Skipping.")
 
-        return total_return
-
-    def calculate_real_portfolio_return(self, year):
-        nominal_return = self.calculate_nominal_portfolio_return(year)
         inflation_rate = self.common.get_inflation_rate(year)
 
-        # 명목 수익률을 실질 수익률로 변환: (1 + 명목수익률) / (1 + 물가상승률) - 1
+        # convert nominal rtn to real rtn : (1 + nominal_return) / (1 + inflation-rate) - 1
         real_return = (1 + nominal_return) / (1 + inflation_rate) - 1
-        return real_return
 
-    def get_investment_returns(self, year):
-        nominal_return = self.calculate_nominal_portfolio_return(year)
-        real_return = self.calculate_real_portfolio_return(year)
         return {"nominal": nominal_return, "real": real_return}
 
     def calculate_portfolio_volatility(self):
-        """
-        포트폴리오의 전체 변동성(표준편차)을 계산합니다.
-        포트폴리오 변동성 = sqrt(w^T * Σ * w)
-        여기서 w는 가중치 벡터, Σ는 공분산 행렬입니다.
-        """
+
         assets = self.correlations["assets"]
         corr_matrix = self.correlations["matrix"]
         n_assets = len(assets)
@@ -191,31 +208,3 @@ class InvestmentModule:
         portfolio_volatility = np.sqrt(portfolio_variance)
 
         return portfolio_volatility
-
-    def simulate_returns(self, years, n_simulations=1000, seed=None):
-        """
-        몬테카를로 시뮬레이션을 통해 포트폴리오 수익률을 시뮬레이션합니다.
-
-        Args:
-            years: 시뮬레이션할 연도 수
-            n_simulations: 시뮬레이션 수행 횟수
-            seed: 난수 시드(재현성을 위해)
-
-        Returns:
-            시뮬레이션된 포트폴리오 수익률 (n_simulations x years)
-        """
-        if seed is not None:
-            np.random.seed(seed)
-
-        # 포트폴리오 기대수익률 및 변동성 계산
-        expected_return = self.calculate_nominal_portfolio_return()
-        volatility = self.calculate_portfolio_volatility()
-
-        # 로그 정규 분포 파라미터 계산
-        mu = np.log(1 + expected_return) - 0.5 * volatility**2
-
-        # 수익률 시뮬레이션
-        returns = np.random.normal(mu, volatility, size=(n_simulations, years))
-        returns = np.exp(returns) - 1  # 로그 정규 분포로 변환
-
-        return returns
