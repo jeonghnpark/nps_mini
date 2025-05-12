@@ -1,4 +1,4 @@
-# 국민연금 ALM 간소화 모델 
+# 국민연금 ALM 초 간소화 모델 
 
 
 
@@ -10,12 +10,7 @@ jh70035@gmail.com<br>
 
 
 ## 프로젝트 소개 
-
-
-
-
-
-
+이 미니 프로젝트는 국민연금의 자산배분(ALM) 분석을 위한 초 간소화된 모델입니다. 국민연금 제5차 재정계산(2023)의 주요 가정을 적용하여 2023년부터 2093년까지의 인구구조 변화, 경제 변수, 연금 가입 및 수급 상황을 예측하고 특히 기금운용전략에 따른 기금의 장기 흐름을 분석합니다.
 
 
 ## 주요 기능
@@ -25,24 +20,26 @@ jh70035@gmail.com<br>
 - 급여지출 모듈 (BenefitModule)
 - 재정수지 모듈 (FinanceModule)
 - 투자모듈(InvestmentModule)
+- 확률적 시뮬레이션 
 
+## 참고문헌
+- [연차보고서 2023-02 - 2024년 국민연금기금의 자산배분 -ALM분석을 중심으로](https://raw.githubusercontent.com/jeonghnpark/nps_mini/main/docs/(%EC%97%B0%EC%B0%A8%EB%B3%B4%EA%B3%A0%EC%84%9C%202023-02)%202024%EB%85%84%20%EA%B5%AD%EB%AF%BC%EC%97%B0%EA%B8%88%EA%B8%B0%EA%B8%88%EC%9D%98%20%EC%9E%90%EC%82%B0%EB%B0%B0%EB%B6%84%20-%20ALM%EB%B6%84%EC%84%9D%EC%9D%84%20%EC%A4%91%EC%8B%AC%EC%9C%BC%EB%A1%9C%20-%20(2).pdf)
 
-### 주요 결과
-- 기본가정하에서 기금 적립금액은 다음과 같습니다. 
-- 국민연금 적립금은 2038년 1,796조원으로 최고치에 도달한 후 지속적으로 감소하고 2055년 소진됩니다.
-- 수입보다 지출이 더 커지는 수지적자는 2039년부터 발생할 것으로 예측되었습니다. 
-- 노인부양비는 지속적으로 증가하여 2070년 124%에 이릅니다. 
+- [국민연금 제5차 재정계산 결과 (2023)](https://raw.githubusercontent.com/jeonghnpark/nps_mini/blob/main/docs/%5B%EC%84%A4%EB%AA%85%EC%9E%90%EB%A3%8C%5D_%EC%9E%AC%EC%A0%95%EC%B6%94%EA%B3%84_%EA%B2%B0%EA%B3%BC.pdf)
 
-
+- 통계청 2023년 사망원인통계 (2023)
+- 고용노동부 근로자의 평균임금(성/사업체규모/연령별) 통계 (2024)
+- 통계청 총조사인구 성/연령별 통계 (2024)
 
 ### 주요 결과 그래프
 
 #### 1. 자산배분 전략에에 따른 적자 전환 및 기금 소진 연도
+##### 1-1. 2022년말 포트폴리오를 유지하는 경우
 ![2022년말비중](./images/기금경로_2022년말비중.png)
 - 기금은 [] 년에 최대 적립금 도달후 지속 감소 추세
 - []년 최초로 기금 적자 전환
 - []년 기금 소진
- 
+ ##### 1-2. 중기 자산배분안(가정)
 ![중기자산배분](./images/기금경로_중기자산배분.png)
 - 기금은 [] 년에 최대 적립금 도달후 지속 감소 추세
 - []년 최초로 기금 적자 전환
@@ -93,14 +90,7 @@ jh70035@gmail.com<br>
 - 소득대체율: 40%
 - 수급개시연령: 65세
 
-## 참고문헌
-- [연차보고서 2023-02 - 2024년 국민연금기금의 자산배분 -ALM분석을 중심으로](https://raw.githubusercontent.com/jeonghnpark/nps_mini/main/docs/(%EC%97%B0%EC%B0%A8%EB%B3%B4%EA%B3%A0%EC%84%9C%202023-02)%202024%EB%85%84%20%EA%B5%AD%EB%AF%BC%EC%97%B0%EA%B8%88%EA%B8%B0%EA%B8%88%EC%9D%98%20%EC%9E%90%EC%82%B0%EB%B0%B0%EB%B6%84%20-%20ALM%EB%B6%84%EC%84%9D%EC%9D%84%20%EC%A4%91%EC%8B%AC%EC%9C%BC%EB%A1%9C%20-%20(2).pdf)
 
-- [국민연금 제5차 재정계산 결과 (2023)](https://raw.githubusercontent.com/jeonghnpark/nps_mini/blob/main/docs/%5B%EC%84%A4%EB%AA%85%EC%9E%90%EB%A3%8C%5D_%EC%9E%AC%EC%A0%95%EC%B6%94%EA%B3%84_%EA%B2%B0%EA%B3%BC.pdf)
-
-- 통계청 2023년 사망원인통계 (2023)
-- 고용노동부 근로자의 평균임금(성/사업체규모/연령별) 통계 (2024)
-- 통계청 총조사인구 성/연령별 통계 (2024)
 
 
 ## 개선 계획 
@@ -126,9 +116,32 @@ pip install -r requirements.txt
 
 ## 실행 방법
 ### 1. 단일 모델 실행(기본가정)
-- 기본가정 모델: `python NPS_model.py`
-### 2. 시나리오 분석과 시각화
-- 시나리오 분석: `python simulation.py`
+```python
+nps = NationalPensionModel()
+rs = nps.run_projection()
+save_results_to_csv(rs)
+create_financial_plots(rs)
+create_demographic_plots(rs)
+```
+### 3. 기금운용정책별 시나리오 분석(ALM)과 시각화
+자산배분 비율 편집
+```
+자산배분 비율 :  InvestmentModule:: _get_default_asset_allocation
+기대 수익률: InvestmentModule:: _get_default_expected_returns
+변동성 : InvestmentModule:: _get_default_volatilities 
+```
+
+```python
+nps_stochastic = NationalPensionModel(stochastic=True, simulation_number=1000)
+rs_stochastic = nps_stochastic.run_projection()
+save_stochastic_result_to_csv(rs_stochastic)
+create_stochastic_financial_plots(
+    rs_stochastic, timestamp=None, title="중기자산산배분(안)"
+)
+create_stochastic_demographic_plots(rs_stochastic)
+```
+
+
 
 ## 출력 결과
 모델은 다음 CSV 파일과 이미지 파일을 생성합니다:
@@ -137,4 +150,5 @@ pip install -r requirements.txt
 - `csv/simulation_results_[timestamp].csv` : 시뮬레이션 결과 
 - `images/data/nps_reserve_fund_[timestamp].png`: 연도별 누적 적립 기금
 - `images/lineplot_xxxx.png`: 각종 시뮬레이션 결과 시각화
+- `images/stochastic_simulation_paths_[timestamp]`: stochastic simulation
 
