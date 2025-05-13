@@ -14,23 +14,25 @@ now = datetime.now()
 timestamp = now.strftime("%d%H%M")
 
 
-def save_results_to_csv(rs):
+def save_results_to_csv(rs, title=""):
     financial_df = pd.DataFrame(rs["financial_results"])
     demographic_df = pd.DataFrame(rs["demographic_results"])
 
     """결과 데이터프레임을 CSV 파일로 저장"""
     financial_df.to_csv(
-        f"csv/financial_results_실질_{timestamp}.csv", encoding="utf-8-sig", index=False
+        f"csv/financial_results_실질_{title}{timestamp}.csv",
+        encoding="utf-8-sig",
+        index=False,
     )
     demographic_df.to_csv(
-        f"csv/demographic_results_실질_{timestamp}.csv",
+        f"csv/demographic_results_실질_{title}{timestamp}.csv",
         encoding="utf-8-sig",
         index=False,
     )
 
 
-def create_financial_plots(rs):
-    """재정추계 결과 시각화"""
+def create_financial_plots(rs, title=""):
+
     financial_df = pd.DataFrame(rs["financial_results"])
 
     # 1. 적립금 추이
@@ -122,7 +124,7 @@ def create_financial_plots(rs):
     plt.figure(figsize=(10, 8))
     plt.plot(
         financial_df["year"],
-        financial_df["real_expenditure"] * 10000 / financial_df["real_gdp"] * 100,
+        financial_df["real_expenditure"] * 100 / financial_df["real_gdp"] * 100,
         marker="o",
         color="orange",
     )
@@ -138,7 +140,7 @@ def create_financial_plots(rs):
     plt.close()
 
 
-def create_demographic_plots(rs):
+def create_demographic_plots(rs, title=""):
     """인구 관련 지표 시각화"""
     demographic_df = pd.DataFrame(rs["demographic_results"])
     # 인구 관련 지표 4개 그래프를 2x2로 배치
@@ -196,7 +198,7 @@ import numpy as np
 import seaborn as sns
 
 
-def create_simulation_visualizations(df):
+def create_simulation_visualizations(df, title=""):
     # 1. 히트맵: 보험료율과 소득대체율에 따른 최대적립금
     plt.figure(figsize=(12, 8))
     pivot_max_reserve = df.pivot(
@@ -328,7 +330,7 @@ def create_simulation_visualizations(df):
     plt.close()
 
 
-def save_stochastic_result_to_csv(rs, timestamp=None):
+def save_stochastic_result_to_csv(rs, timestamp=None, title=""):
     """확률적 시뮬레이션 결과를 CSV 파일로 저장"""
     if timestamp is None:
         timestamp = now.strftime("%d%H%M")
@@ -336,7 +338,7 @@ def save_stochastic_result_to_csv(rs, timestamp=None):
     # 인구 데이터 저장 (시뮬레이션에서 공통)
     demographic_df = pd.DataFrame(rs["demographic_results"])
     demographic_df.to_csv(
-        f"csv/demographic_results_stochastic_{timestamp}.csv",
+        f"csv/demographic_results_stochastic_{title}{timestamp}.csv",
         encoding="utf-8-sig",
         index=False,
     )
@@ -383,7 +385,7 @@ def save_stochastic_result_to_csv(rs, timestamp=None):
     # 통계 데이터 저장
     stats_df = pd.DataFrame(stats_data)
     stats_df.to_csv(
-        f"csv/stochastic_stats_{timestamp}.csv",
+        f"csv/stochastic_stats_{title}{timestamp}.csv",
         encoding="utf-8-sig",
         index=False,
     )
@@ -409,7 +411,7 @@ def save_stochastic_result_to_csv(rs, timestamp=None):
 
     depletion_df = pd.DataFrame(depletion_years)
     depletion_df.to_csv(
-        f"csv/stochastic_depletion_years_{timestamp}.csv",
+        f"csv/stochastic_depletion_years_{title}{timestamp}.csv",
         encoding="utf-8-sig",
         index=False,
     )
@@ -424,15 +426,13 @@ def save_stochastic_result_to_csv(rs, timestamp=None):
 
     all_results_df = pd.DataFrame(all_results)
     all_results_df.to_csv(
-        f"csv/stochastic_all_results_{timestamp}.csv",
+        f"csv/stochastic_all_results_{title}{timestamp}.csv",
         encoding="utf-8-sig",
         index=False,
     )
 
-    print(f"확률적 시뮬레이션 결과가 csv 폴더에 저장되었습니다 ({timestamp})")
 
-
-def create_stochastic_financial_plots(rs, timestamp=None, title="2022년말 비중"):
+def create_stochastic_financial_plots(rs, timestamp=None, title=""):
     """확률적 시뮬레이션 결과 시각화"""
     if timestamp is None:
         timestamp = now.strftime("%d%H%M")
@@ -521,7 +521,7 @@ def create_stochastic_financial_plots(rs, timestamp=None, title="2022년말 비�
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(
-        f"images/data/stochastic_reserve_fund_{timestamp}.png",
+        f"images/data/stochastic_reserve_fund_{title}{timestamp}.png",
         dpi=300,
         bbox_inches="tight",
     )
@@ -569,7 +569,9 @@ def create_stochastic_financial_plots(rs, timestamp=None, title="2022년말 비�
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(
-        f"images/data/stochastic_balance_{timestamp}.png", dpi=300, bbox_inches="tight"
+        f"images/data/stochastic_balance_{title}{timestamp}.png",
+        dpi=300,
+        bbox_inches="tight",
     )
     plt.close()
 
@@ -606,7 +608,7 @@ def create_stochastic_financial_plots(rs, timestamp=None, title="2022년말 비�
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
         plt.savefig(
-            f"images/data/stochastic_depletion_distribution_{timestamp}.png",
+            f"images/data/stochastic_depletion_distribution_{title}{timestamp}.png",
             dpi=300,
             bbox_inches="tight",
         )
@@ -665,16 +667,14 @@ def create_stochastic_financial_plots(rs, timestamp=None, title="2022년말 비�
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(
-        f"images/data/stochastic_simulation_paths_{timestamp}.png",
+        f"images/data/stochastic_simulation_paths_{title}{timestamp}.png",
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
 
-    print(f"확률적 시뮬레이션 시각화가 images/data 폴더에 저장되었습니다 ({timestamp})")
 
-
-def create_stochastic_demographic_plots(rs, timestamp=None):
+def create_stochastic_demographic_plots(rs, timestamp=None, title=""):
     """확률적 시뮬레이션의 인구 지표 시각화 (결정론적 모델과 동일)"""
     create_demographic_plots(rs)  # 인구 데이터는 확률적/결정론적 동일
 

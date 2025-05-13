@@ -159,7 +159,8 @@ class NationalPensionModel:
             # 시뮬레이션 실행
             for sim_index in range(self.investment.simulation_number):
                 # 시뮬레이션별 finance 모듈 초기화
-                print(f"{sim_index} simulation ")
+                if sim_index % 100 == 0:
+                    print(f"{sim_index+1}th simulations ")
                 sim_finance = FinanceModule(self.common, self.investment)
                 sim_results = []
 
@@ -192,18 +193,18 @@ class NationalPensionModel:
 
 
 if __name__ == "__main__":
+
+    title = "중기자산배분안(가정정)"
     # 결정론적 모델 실행
     nps = NationalPensionModel()
     rs = nps.run_projection()
-    save_results_to_csv(rs)
-    create_financial_plots(rs)
-    create_demographic_plots(rs)
+    save_results_to_csv(rs, title=title)
+    create_financial_plots(rs, title=title)
+    create_demographic_plots(rs, title=title)
 
     # 확률적 모델 실행
     nps_stochastic = NationalPensionModel(stochastic=True, simulation_number=1000)
     rs_stochastic = nps_stochastic.run_projection()
-    save_stochastic_result_to_csv(rs_stochastic)
-    create_stochastic_financial_plots(
-        rs_stochastic, timestamp=None, title="중기자산산배분(안)"
-    )
-    create_stochastic_demographic_plots(rs_stochastic)
+    save_stochastic_result_to_csv(rs_stochastic, title=title)
+    create_stochastic_financial_plots(rs_stochastic, timestamp=None, title=title)
+    create_stochastic_demographic_plots(rs_stochastic, title=title)

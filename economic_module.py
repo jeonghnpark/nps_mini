@@ -43,8 +43,8 @@ class EconomicModule:
         }
 
         self.base_values = {
-            "nominal_gdp": 2100e12,  # 2023년 명목 GDP (2100조원)
-            "nominal_wage": 3.85e6,  # 2023년 월평균 임금 (385만원)
+            "nominal_gdp": 2100e8,  # 2023년 명목 GDP (2100조원), 단위:만원
+            "nominal_wage": 3.85e2,  # 2023년 월평균 임금 (385만원),단위:만원
         }
 
     def project_variables(self, year):
