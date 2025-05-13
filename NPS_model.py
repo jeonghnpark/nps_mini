@@ -194,7 +194,7 @@ class NationalPensionModel:
 
 if __name__ == "__main__":
 
-    title = "중기자산배분안(가정정)"
+    title = "중기자산배분안(가정)"
     # 결정론적 모델 실행
     nps = NationalPensionModel()
     rs = nps.run_projection()

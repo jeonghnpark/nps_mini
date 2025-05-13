@@ -12,6 +12,8 @@ jh70035@gmail.com<br>
 ## 프로젝트 소개 
 이 미니 프로젝트는 국민연금의 자산배분(ALM) 분석을 위한 초 간소화된 모델입니다. 국민연금 제5차 재정계산(2023)의 주요 가정을 적용하여 2023년부터 2093년까지의 인구구조 변화, 경제 변수, 연금 가입 및 수급 상황을 예측하고 특히 기금운용전략에 따른 기금의 장기 흐름을 분석합니다.
 
+[국민연금 연구원 연차보고서2023-02](https://raw.githubusercontent.com/jeonghnpark/nps_mini/main/docs/(%EC%97%B0%EC%B0%A8%EB%B3%B4%EA%B3%A0%EC%84%9C%202023-02)%202024%EB%85%84%20%EA%B5%AD%EB%AF%BC%EC%97%B0%EA%B8%88%EA%B8%B0%EA%B8%88%EC%9D%98%20%EC%9E%90%EC%82%B0%EB%B0%B0%EB%B6%84%20-%20ALM%EB%B6%84%EC%84%9D%EC%9D%84%20%EC%A4%91%EC%8B%AC%EC%9C%BC%EB%A1%9C%20-%20(2).pdf)의 결과를 재현합니다. 
+
 
 ## 주요 기능
 - 인구모듈(DemographicModule)
@@ -33,7 +35,8 @@ jh70035@gmail.com<br>
 
 ### 주요 결과 그래프
 
-#### 1. 자산배분 전략에에 따른 적자 전환 및 기금 소진 연도 (연차보고서 98page 재현)
+#### 1. 자산배분 전략에에 따른 적자 전환 및 기금 소진 연도 
+([연차보고서](https://raw.githubusercontent.com/jeonghnpark/nps_mini/main/docs/(%EC%97%B0%EC%B0%A8%EB%B3%B4%EA%B3%A0%EC%84%9C%202023-02)%202024%EB%85%84%20%EA%B5%AD%EB%AF%BC%EC%97%B0%EA%B8%88%EA%B8%B0%EA%B8%88%EC%9D%98%20%EC%9E%90%EC%82%B0%EB%B0%B0%EB%B6%84%20-%20ALM%EB%B6%84%EC%84%9D%EC%9D%84%20%EC%A4%91%EC%8B%AC%EC%9C%BC%EB%A1%9C%20-%20(2).pdf) 98 페이지 재현)
 ##### 1-1. 2022년말 포트폴리오를 유지하는 경우
 ![2022년말비중](./images/기금경로_2022년말비중.png)
 - 기금은 2038년에 최대 적립금 1788조 도달후 지속 감소 추세
